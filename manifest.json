@@ -1,7 +1,7 @@
 {
-  "name": "Cave collec extension",
+  "name": "Cave collec",
   "description": "Ajoute un tag lu/non-lu sur le site mangacollec!",
-  "version": "1.1",
+  "version": "1.2",
   "manifest_version": 3,
   "background": {
     "service_worker": "background.js"
