@@ -44,7 +44,7 @@ registerUsername.addEventListener('focusout', () => {
     if(!registerUsername.value) return
     request('GET', `https://quinta.ovh:3443/api/user/exists/${registerUsername.value}`, {}, oResp => {
         const resp = JSON.parse(oResp.response)
-        if(oResp.statusCode !== 200) return alert(resp.message)
+        if(oResp.status !== 200) return alert(resp.message)
         if(!resp.exists) {
             let added = addErrorAfterEl(registerUsername, 'Username already used')
             setTimeout(() => {
@@ -62,7 +62,7 @@ connectBtn.addEventListener("click", async () => { // Verifies input then sends 
     }
     request('POST', 'https://quinta.ovh:3443/api/user/login', {username: connectUsername.value, password: connectPassword.value}, oResp => {
         const resp = JSON.parse(oResp.response)
-        if(oResp.statusCode !== 200) return alert(resp.message)
+        if(oResp.status !== 200) return alert(resp.message)
         chrome.storage.sync.set({'cave-collec-token': resp.token, 'cave-collec-username': resp.username}, displayRightDiv)
         (() => {alert('If you werealready on mangacollec, please refresh the page')})();
     })
@@ -85,7 +85,7 @@ registerBtn.addEventListener('click', () => {
     }
     request('POST', 'https://quinta.ovh:3443/api/user/register', body, oResp => {
         const resp = JSON.parse(oResp.response)
-        if(resp.statusCode !== 201) return alert(resp.message)
+        if(resp.status !== 201) return alert(resp.message)
         chrome.storage.sync.set({'cave-collec-token': resp.token, 'cave-collec-username': resp.username}, displayRightDiv)
         (() => {alert('If you werealready on mangacollec, please refresh the page')})();
     })
