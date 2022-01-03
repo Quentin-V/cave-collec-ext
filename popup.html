@@ -1,11 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
-    <link rel="stylesheet" href="button.css">
+    <link rel="stylesheet" href="popup.css">
+    <title>Cave collec popup</title>
   </head>
   <body>
-    <input type="text" id="inputUsername" name="user" placeholder="Username" />
-    <button type="button" name="btnUsername" id="btnUsername">Save username</button>
+    <div id="isConnected" style="display: none">
+      <a id="welcomeA">Welcome ${username}, you are connected</a>
+    </div>
+    <div id="register" style="display: none">
+      <a id="arrow">&larr;</a>
+      <label for="registerUsername">Username:</label>
+      <input type="text" id="registerUsername" name="username" placeholder="username" />
+      <br/>
+      <label for="registerPassword">Password:</label>
+      <input type="password" id="registerPassword" name="password" />
+      <br/>
+      <label for="registerConfirmPass">Confirm password:</label>
+      <input type="password" id="registerConfirmPass" name="confirmPass" />
+      <br/>
+      <button type="button" name="btnRegister" id="btnRegister">Register</button>
+    </div>
+    <div id="connect" style="display: none">
+      <label for="connectUsername">Username:</label>
+      <input type="text" id="connectUsername" name="user" placeholder="username" />
+      <br/>
+      <label for="connectPassword">Password:</label>
+      <input type="password" id="connectPassword" name="password" />
+      <button type="button" name="btnConnect" id="btnConnect">Connect</button>
+      <br/>
+      <a id="registerLink">No account yet, click here to create one</a>
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>

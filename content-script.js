@@ -1,9 +1,7 @@
-var username = null
-
 const notReleasedVolume = '<div class="css-1dbjc4n"><svg viewBox="0 0 512 512" width="30" height="30" fill="var(--colors-icon)" stroke="var(--colors-icon)"><rect width="416" height="352" rx="48" ry="48" fill="none" stroke-width="32" stroke-linejoin="round" x="48" y="80"></rect><circle cx="336" cy="176" r="32" fill="none" stroke-width="32" stroke-miterlimit="10"></circle><path d="M304 335.79l-90.66-90.49a32 32 0 00-43.87-1.3L48 352M224 432l123.34-123.34a32 32 0 0143.11-2L464 368" fill="none" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>'
-const observer = new MutationObserver((mutationList, observer) => {
+const observer = new MutationObserver((mutationList) => {
 	// Guard case to prevent triggering for nothing, will only trigger if all added elements are Images, so new volumes OR if there is a not
-	if(!mutationList.every(m => m?.addedNodes?.[0]?.constructor?.name === 'HTMLImageElement') && !mutationList.some(m => m?.addedNodes?.[0]?.innerHTML == notReleasedVolume)) return
+	if(!mutationList.every(m => m?.addedNodes?.[0]?.constructor?.name === 'HTMLImageElement') && !mutationList.some(m => m?.addedNodes?.[0]?.innerHTML === notReleasedVolume)) return
 	let url = window.location.href
 	handleEditions(url.substr(url.indexOf('/editions/')+'/editions/'.length))
 })
@@ -13,12 +11,15 @@ const observerConfig = { childList: true, subtree: true };
 window.onpopstate = () => handleURLChange(window.location.href)
 window.onpopstate() // Exec the function at the beginning
 
+let username, token
+
 function handleURLChange(url) {
 	observer.disconnect() // Disconnect the observer when changing url e.g. going from edition to volume
 	// Refresh the username
-	chrome.storage.sync.get(['cave-collec-username'], obj => {
+	chrome.storage.sync.get(['cave-collec-username', 'cave-collec-token'], obj => {
 		username = obj['cave-collec-username']
-		if(!username) return
+		token = obj['cave-collec-token']
+		if(!(username && token)) return
 		if(url.includes('/editions/')) { // If in edition page
 			handleEditions(url.substr(url.indexOf('/editions/')+'/editions/'.length))
 			observer.observe(document.querySelector('div[class="css-1dbjc4n r-eqz5dr"]').firstChild, observerConfig)
@@ -36,7 +37,7 @@ function handleEditions(editionId) {
 	volumes.forEach(a => {
 	    idToEl.set(a.href.substr(a.href.indexOf('/volumes/')+'/volumes/'.length), a)
 	})
-	let ids = Array.from(idToEl.keys())
+
 	let url = `https://quinta.ovh:3443/api/edition/${editionId}/${username}`
 	request("GET", url, null, (oReq) => {
 		let jsonResp = JSON.parse(oReq.response)
@@ -46,7 +47,7 @@ function handleEditions(editionId) {
 			if(!el || el.dataset.read) return
 			let readCheck =  createReadCheck()
 			el.children[0].children[1].appendChild(readCheck)
-			el.dataset.read = true
+			el.dataset.read = "true"
 		})
 	})
 }
@@ -79,7 +80,7 @@ function handleVolume(volumeId) { // Creates the read / not read button and put 
 	readDiv.appendChild(container)
 	let editionHref = document.querySelectorAll('a[class="css-4rbku5 css-18t94o4 css-1dbjc4n r-1loqt21 r-1otgn73 r-1i6wzkk r-lrvibr"]')[1].href
 	let editionId = editionHref.substr(editionHref.indexOf('/editions/')+'/editions/'.length)
-	let isRead = request('GET', `https://quinta.ovh:3443/api/read/${editionId}/${volumeId}/${username}`, null, oReq => {
+	request('GET', `https://quinta.ovh:3443/api/read/${editionId}/${volumeId}/${username}`, null, oReq => {
 		let isRead = JSON.parse(oReq.response).read
 		if(isRead) notRead2Read(readDiv, a, volumeId, false)
 		else read2NotRead(readDiv, a, volumeId, false)
@@ -104,9 +105,9 @@ function read2NotRead(readDiv, a, volumeId, execRequest = true) { // Changes rea
 }
 
 function request(method, url, body, callback) { // Sends a request
-	var oReq = new XMLHttpRequest();
+	const oReq = new XMLHttpRequest();
 	oReq.open(method, url, true);
-	if(typeof callback === 'function') oReq.onload = (res) => callback(oReq)
+	if(typeof callback === 'function') oReq.onload = () => callback(oReq)
 	oReq.setRequestHeader("Content-Type", "application/json; charset=utf-8")
 	jsonBody = JSON.stringify(body);
 	oReq.send(jsonBody);
