@@ -109,6 +109,7 @@ function request(method, url, body, callback) { // Sends a request
 	oReq.open(method, url, true);
 	if(typeof callback === 'function') oReq.onload = () => callback(oReq)
 	oReq.setRequestHeader("Content-Type", "application/json; charset=utf-8")
+	oReq.setRequestHeader('Authorization', 'Bearer ' + token)
 	jsonBody = JSON.stringify(body);
 	oReq.send(jsonBody);
 }

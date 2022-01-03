@@ -13,7 +13,8 @@ let connectUsername = document.getElementById("connectUsername")
 let connectPassword = document.getElementById('connectPassword')
 let connectBtn      = document.getElementById("btnConnect")
 
-let welcomeA = document.getElementById('welcomeA')
+let welcomeA      = document.getElementById('welcomeA')
+let disconnectBtn = document.getElementById('disconnectBtn')
 
 displayRightDiv()
 function displayRightDiv() { // Displays the right div when no user input is needed
@@ -22,10 +23,14 @@ function displayRightDiv() { // Displays the right div when no user input is nee
         let token = obj['cave-collec-token']
         debugger
         if(!(username && token)) {
+            registerDiv.style.display = 'none'
+            isConnectedDiv.style.display = 'none'
             connectDiv.style.display = ''
-            welcomeA.innerHTML = welcomeA.innerHTML.replace('${username}', username)
         }else {
+            connectDiv.style.display = 'none'
+            registerDiv.style.display = 'none'
             isConnectedDiv.style.display = ''
+            welcomeA.innerHTML = welcomeA.innerHTML.replace('${username}', username)
         }
     })
 }
@@ -45,7 +50,7 @@ registerUsername.addEventListener('focusout', () => {
     request('GET', `https://quinta.ovh:3443/api/user/exists/${registerUsername.value}`, {}, oResp => {
         const resp = JSON.parse(oResp.response)
         if(oResp.status !== 200) return alert(resp.message)
-        if(!resp.exists) {
+        if(resp.exists) {
             let added = addErrorAfterEl(registerUsername, 'Username already used')
             setTimeout(() => {
                 added.forEach(e => fadeOutEffect(e))
@@ -64,7 +69,7 @@ connectBtn.addEventListener("click", async () => { // Verifies input then sends 
         const resp = JSON.parse(oResp.response)
         if(oResp.status !== 200) return alert(resp.message)
         chrome.storage.sync.set({'cave-collec-token': resp.token, 'cave-collec-username': resp.username}, displayRightDiv)
-        (() => {alert('If you werealready on mangacollec, please refresh the page')})();
+        alert('If you were already on mangacollec, please refresh the page')
     })
 })
 
@@ -89,6 +94,10 @@ registerBtn.addEventListener('click', () => {
         chrome.storage.sync.set({'cave-collec-token': resp.token, 'cave-collec-username': resp.username}, displayRightDiv)
         (() => {alert('If you werealready on mangacollec, please refresh the page')})();
     })
+})
+
+disconnectBtn.addEventListener('click', () => {
+    chrome.storage.sync.set({'cave-collec-token': null, 'cave-collec-username': null}, displayRightDiv)
 })
 
 function changeConnectRegister(toHide, toHideUsername, toHidePassword, toShow, toShowUsername, toShowPassword) {
@@ -128,6 +137,7 @@ function fadeOutEffect(target) {
         if (target.style.opacity > 0) {
             target.style.opacity -= 0.1;
         } else {
+            target.remove()
             clearInterval(fadeEffect);
         }
     }, 200);
