@@ -3,7 +3,7 @@
   "description": "Ajoute un tag lu/non-lu sur le site mangacollec!",
   "version": "1.3",
   "manifest_version": 3,
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage"],
   "content_scripts": [
    {
      "matches": ["https://*.mangacollec.com/*"],
