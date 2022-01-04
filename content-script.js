@@ -14,6 +14,8 @@ window.onpopstate() // Exec the function at the beginning
 let username, token
 
 function handleURLChange(url) {
+	let readDiv = document.getElementById('isRead')
+	if(readDiv) readDiv.remove() // Removes the read div if one is already on the page (e.g. changing volumes with arrows)
 	observer.disconnect() // Disconnect the observer when changing url e.g. going from edition to volume
 	// Refresh the username
 	chrome.storage.sync.get(['cave-collec-username', 'cave-collec-token'], obj => {
