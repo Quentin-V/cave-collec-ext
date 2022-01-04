@@ -40,7 +40,7 @@ function handleEditions(editionId) {
 	    idToEl.set(a.href.substr(a.href.indexOf('/volumes/')+'/volumes/'.length), a)
 	})
 
-	let url = `https://quinta.ovh:3443/api/edition/${editionId}/${username}`
+	let url = `https://quinta.ovh:3443/api/edition/${editionId}`
 	request("GET", url, null, (oReq) => {
 		let jsonResp = JSON.parse(oReq.response)
 		jsonResp.forEach(r => {
@@ -82,7 +82,7 @@ function handleVolume(volumeId) { // Creates the read / not read button and put 
 	readDiv.appendChild(container)
 	let editionHref = document.querySelectorAll('a[class="css-4rbku5 css-18t94o4 css-1dbjc4n r-1loqt21 r-1otgn73 r-1i6wzkk r-lrvibr"]')[1].href
 	let editionId = editionHref.substr(editionHref.indexOf('/editions/')+'/editions/'.length)
-	request('GET', `https://quinta.ovh:3443/api/read/${editionId}/${volumeId}/${username}`, null, oReq => {
+	request('GET', `https://quinta.ovh:3443/api/read/${editionId}/${volumeId}`, null, oReq => {
 		let isRead = JSON.parse(oReq.response).read
 		if(isRead) notRead2Read(readDiv, a, volumeId, false)
 		else read2NotRead(readDiv, a, volumeId, false)
@@ -95,7 +95,7 @@ function notRead2Read(readDiv, a, volumeId, execRequest = true) { // Changes not
 	readDiv.style.backgroundColor = '#4c76ad'
 	readDiv.onclick = () => read2NotRead(readDiv, a, volumeId)
 	if(!execRequest) return;
-	request('PUT', `https://quinta.ovh:3443/api/read/${volumeId}/${username}`, {read: true}, null)
+	request('PUT', `https://quinta.ovh:3443/api/read/${volumeId}`, {read: true}, null)
 }
 
 function read2NotRead(readDiv, a, volumeId, execRequest = true) { // Changes read to not read and sends the request to the server if needed
@@ -103,7 +103,7 @@ function read2NotRead(readDiv, a, volumeId, execRequest = true) { // Changes rea
 	readDiv.style.backgroundColor = '#cf783a'
 	readDiv.onclick = () => notRead2Read(readDiv, a, volumeId)
 	if(!execRequest) return;
-	request('PUT', `https://quinta.ovh:3443/api/read/${volumeId}/${username}`, {read: false}, null)
+	request('PUT', `https://quinta.ovh:3443/api/read/${volumeId}`, {read: false}, null)
 }
 
 function request(method, url, body, callback) { // Sends a request
